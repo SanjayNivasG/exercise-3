@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "YOUR_DOCKERHUB_USERNAME/student-app"
+        IMAGE_NAME = "sanjaynivasg/student-app"
     }
 
     stages {
@@ -15,7 +15,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:v1 .'
+                sh '''
+                docker build -t $IMAGE_NAME:v1 .
+                docker tag $IMAGE_NAME:v1 $IMAGE_NAME:latest
+                '''
             }
         }
 
@@ -30,6 +33,7 @@ pipeline {
                     sh '''
                     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                     docker push $IMAGE_NAME:v1
+                    docker push $IMAGE_NAME:latest
                     '''
                 }
             }
